@@ -1,0 +1,103 @@
+<!-- app/templates/profile.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }} - LitVideo{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            <img src="{{ User.get_avatar_url(user.id) }}" alt="Аватар пользователя {{ user.username }}"
+                 class="profile-avatar">
+            {% if is_current_user %}
+            <form action="{{ url_for('auth.upload_avatar', user_id=user.id) }}" method="post"
+                  enctype="multipart/form-data" class="avatar-upload-form">
+                <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
+                <button type="button" class="change-avatar-btn">Изменить аватар</button>
+            </form>
+            {% endif %}
+        </div>
+        <!-- app/templates/profile.html -->
+        <div class="user-info">
+            <h1>{{ user.username }}</h1>
+            <p>Подписчиков: {{ subscribers_count }}</p>
+            {% if not is_current_user %}
+              <button class="subscribe-btn" data-user-id="{{ user.id }}">
+                {{ 'Подписаться' if not is_subscribed else 'Отписаться' }}
+              </button>
+            {% endif %}
+            <p>Зарегистрирован: {{ user.created_at }}</p>
+            {% if is_current_user %}
+                <a href="{{ url_for('auth.logout') }}" class="logout-btn">Выйти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="user-videos">
+        <h2>Видео пользователя</h2>
+        <div class="video-grid">
+            {% for video in videos %}
+             <div class="video-card">
+                <a class="video-tile-a" href="{{ url_for('video.view_video', video_id=video.id) }}">
+                    <div class="thumbnail">
+                        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                    </div>
+                    <div class="video-info">
+                        <div class="avatar-part">
+                            <img src="{{ User.get_avatar_url(video.user_id) }}" alt="{{ video.author }}"
+                                 class="author-avatar">
+                        </div>
+                        <div class="info-part">
+                            <span class="video-title">{{ video.title }}</span>
+                            <span class="video-author">{{ video.author }}</span>
+                            <span class="video-uploaded-time">{{ video.views }} views • {{ video.created_at|humanize_time }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% else %}
+            <p>Пользователь пока не загрузил ни одного видео.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+ document.addEventListener('DOMContentLoaded', function () {
+    const changeAvatarBtn = document.querySelector('.change-avatar-btn');
+    const avatarInput = document.querySelector('#avatar');
+
+    if (changeAvatarBtn && avatarInput) {
+        changeAvatarBtn.addEventListener('click', function () {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                this.form.submit();
+            }
+        });
+    }
+
+    // Добавляем обработчик для кнопки подписки
+    const subscribeBtn = document.querySelector('.subscribe-btn');
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            fetch(`/auth/profile/${userId}/subscribe`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.textContent = data.action === 'subscribe' ? 'Отписаться' : 'Подписаться';
+                        // Обновите количество подписчиков (если нужно)
+                        //location.reload();
+                    } else {
+                        alert(data.message || 'Произошла ошибка');
+                    }
+                });
+        });
+    }
+});
+</script>
+{% endblock %}

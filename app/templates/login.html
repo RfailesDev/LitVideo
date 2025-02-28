@@ -1,0 +1,23 @@
+<!-- app/templates/login.html -->
+{% extends 'base.html' %}
+
+{% block title %}Вход - LitVideo{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Вход</h1>
+    <form action="{{ url_for('auth.login') }}" method="post">
+        <div class="form-group">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn-primary">Войти</button>
+    </form>
+    <p>Еще нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрируйтесь</a></p>
+</div>
+
+{% endblock %}

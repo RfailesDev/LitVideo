@@ -1,0 +1,122 @@
+<!-- app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LitVideo{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Mono:wght@100..900&family=Readex+Pro:wght@160..700&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+<div id="intro-overlay">
+    <img src="{{ url_for('static', filename='svg/intro.svg') }}" alt="LitVideo Intro" id="intro-svg">
+</div>
+<header>
+    <div class="header-container">
+        <div class="header-left">
+            <button class="menu-toggle" aria-label="Открыть меню">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <a href="{{ url_for('video.index') }}">
+                    <span class="brand-name"><i class="fab fa-youtube"></i> LitVideo</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <form action="{{ url_for('video.index') }}" method="get" class="search-form">  <!--  ИЗМЕНЕНО: action -->
+                <input type="text" class="search-input" name="query" placeholder="Поиск" aria-label="Поиск" value="{{ query }}"> <!-- Добавлено value="{{ query }}" -->
+                <button type="submit" class="search-btn" aria-label="Искать"><i class="fas fa-search"></i></button>
+                <button type="button" class="voice-search" aria-label="Голосовой поиск"><i
+                        class="fas fa-microphone"></i></button>
+            </form>
+        </div>
+
+        <div class="header-right">
+            {% if session.user_id %}
+            <button class="header-icon-btn" aria-label="Загрузить видео">
+                <a href="{{ url_for('video.upload_video') }}"><i class="fas fa-upload"></i></a>
+            </button>
+            <button class="header-icon-btn" aria-label="Уведомления">
+                <i class="fas fa-bell"></i>
+            </button>
+            <div class="user-menu">
+                <a href="{{ url_for('auth.profile', user_id=session.user_id) }}" class="user-profile-link">
+                    <img src="{{ User.get_avatar_url(session.user_id) }}" alt="{{ session.username }}"
+                         class="user-avatar-img">
+                    <span class="username">{{ session.username }}</span>
+                </a>
+            </div>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="signin-btn"><i class="fas fa-sign-in-alt"></i> Войти</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+
+<main>
+    {% for message in get_flashed_messages() %}
+    <div class="flash-message">{{ message }}</div>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <p>© 2025 LitVideo. Все права защищены.</p>
+</footer>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flashMessages = document.querySelectorAll('.flash-message');
+
+        flashMessages.forEach(message => {
+            setTimeout(() => {
+                message.remove(); // Удаляем элемент из DOM
+            }, 2000); // Удаляем через 2 секунды (должно совпадать с общей длительностью анимации)
+        });
+
+        // INTRO
+        const introOverlay = document.getElementById('intro-overlay');
+        // Проверяем, было ли уже показано интро
+        if (!localStorage.getItem('introShown')) {
+            introOverlay.style.display = 'flex'; // Показываем оверлей
+
+            // Ждем 4 секунды (длительность SVG-анимации), затем скрываем оверлей
+            setTimeout(() => {
+                introOverlay.style.display = 'none';
+                localStorage.setItem('introShown', 'true'); // Отмечаем, что интро было показано
+            }, 4000);
+        } else {
+            introOverlay.style.display = 'none'; // Интро уже было показано, сразу скрываем
+        }
+
+        setTimeout(() => {
+            introOverlay.classList.add('hidden'); // Добавляем класс hidden
+            // introOverlay.style.display = 'none';  // Убираем
+            localStorage.setItem('introShown', 'true');
+
+            // Убираем display: none через некоторое время после завершения анимации (0.5s + небольшая задержка)
+            setTimeout(() => {
+                introOverlay.style.display = 'none';
+            }, 600); // 0.5s (transition) + 0.1s (задержка)
+
+        }, 5000);
+    });
+</script>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!-- app/templates/video.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ video.title }} - LitVideo{% endblock %}
+
+{% block head %}
+<!-- Подключаем Font Awesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Подключаем стили Plyr и наш собственный CSS для страницы видео -->
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+{% endblock %}
+
+{% block content %}
+<div class="video-page container">
+    <div class="video-main">
+        <div class="video-player-wrapper">
+            <!-- Современный плеер Plyr -->
+            <video id="player" playsinline controls poster="{{ video.thumbnail_url }}">
+                <source src="{{ video.video_url }}" type="video/mp4"/>
+                Ваш браузер не поддерживает видео.
+            </video>
+        </div>
+
+        <div class="video-details">
+            <span class="video-title">{{ video.title }}</span>
+
+            <div class="channel-info">
+                <div class="main-part">
+                    <div class="channel-avatar">
+                        <img src="{{ User.get_avatar_url(video.user_id) }}" alt="{{ video.author }}"
+                             class="author-avatar">
+                    </div>
+                    <a href="{{ url_for('auth.profile', user_id=video.user_id) }}">
+                        <span class="channel-author">{{ video.author }}</span>
+                    </a>
+                    <button class="subscribe-btn">Subscribe</button>
+                </div>
+
+                <div class="video-actions">
+                    <div class="likes-dislikes-container">
+                        <button class="action-btn like-btn {% if video.user_liked %}active{% endif %}"
+                                data-video-id="{{ video.id }}" data-action="like">
+                            <i class="{% if video.user_liked %}fas{% else %}far{% endif %} fa-thumbs-up"></i> <span
+                                class="count">{{ video.likes }}</span>
+                        </button>
+                        <button class="action-btn dislike-btn {% if video.user_disliked %}active{% endif %}"
+                                data-video-id="{{ video.id }}" data-action="dislike">
+                            <i class="{% if video.user_disliked %}fas{% else %}far{% endif %} fa-thumbs-down"></i> <span
+                                class="count">{{ video.dislikes }}</span>
+                        </button>
+                    </div>
+                    <button class="action-btn share-btn">
+                        <i class="fas fa-share"></i> Поделиться
+                    </button>
+                    <button class="action-btn save-btn">
+                        <i class="far fa-bookmark"></i> Сохранить
+                    </button>
+                    <!-- ИЗМЕНЕННАЯ КНОПКА СКАЧАТЬ (добавлена проверка) -->
+                    {% if session.user_id %}
+                    <button class="action-btn download-btn" data-url="{{ url_for('video.download_video', filename=video.filepath) }}">
+                        <i class="fas fa-download"></i> Скачать
+                    </button>
+                    {% endif %}
+                    <button class="action-btn more-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="video-stats">
+                <div class="video-stats-top-bar">
+                    <div class="views-date">
+                        <span class="video-data">{{ video.views }} views {{ video.created_at|humanize_time }}</span>
+                    </div>
+                </div>
+                <div class="video-description">
+                    <p>{{ video.description }}</p>
+                    <span class="author-capt">Автор: <div class="bg">{{ video.author }}</div></span>
+                    {% if video.description|length > 200 %}
+                    <button class="show-more-btn">Показать больше</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-header">
+                <span>{{ video.comments|length }} comments</span>
+            </div>
+
+            {% if session.user_id %}
+            <div class="comment-form-wrapper">
+                <div class="user-avatar">
+                    <img src="{{ User.get_avatar_url(session.user_id) }}" alt="{{ session.username }}" class="avatar-img">
+                </div>
+                <form class="comment-form" action="{{ url_for('comment.add_comment', video_id=video.id) }}"
+                      method="post">
+                    <textarea name="content" placeholder="Оставить комментарий..."></textarea>
+                    <div class="comment-actions">
+                        <button type="button" class="btn-cancel">Отмена</button>
+                        <button type="submit" class="btn-primary">Отправить</button>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <div class="login-to-comment">
+                <i class="fas fa-comment"></i>
+                <p><a href="{{ url_for('auth.login') }}">Войдите</a> чтобы оставить комментарий.</p>
+            </div>
+            {% endif %}
+
+            <div class="comments-list">
+                {% for comment in video.comments %}
+                <div class="comment">
+                    <div class="comment-avatar">
+                        <img src="{{ User.get_avatar_url(comment.user_id) }}" alt="{{ comment.author }}"
+                             class="avatar-img">
+                    </div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <a href="{{ url_for('auth.profile', user_id=comment.user_id) }}">
+                                <span class="comment-author">{{ comment.author }}</span>
+                            </a>
+                            <span class="comment-time">{{ comment.created_at }}</span>
+                        </div>
+                        <div class="comment-content">{{ comment.comment }}</div>
+                        <div class="comment-actions">
+                            <button class="comment-like"><i class="far fa-thumbs-up"></i></button>
+                            <button class="comment-dislike"><i class="far fa-thumbs-down"></i></button>
+                            <button class="comment-reply">Ответить</button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="no-comments">Пока нет комментариев. Будьте первым!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="video-sidebar">
+        <h2>Рекомендуемые видео</h2>
+        <div class="related-videos">
+            {% for related in related_videos %}
+            <a href="{{ url_for('video.view_video', video_id=related.id) }}" class="related-video-card">
+                <div class="thumbnail">
+                    <img src="{{ related.thumbnail_url }}" alt="{{ related.title }}">
+                    <span class="video-duration"></span>
+                    <!-- Здесь можно динамически выводить длительность, если есть такая информация -->
+                </div>
+                <div class="video-info">
+                    <h3 class="related-video-title">{{ related.title }}</h3>
+                    <p class="related-video-author">{{ related.author }}</p>
+                    <span class="video-uploaded-time">{{ video.views }} views • {{ video.created_at|humanize_time }}</span>
+                    <!-- Дополнительные параметры (например, просмотры) можно добавить при необходимости -->
+                </div>
+            </a>
+            {% else %}
+            <p class="no-related">Нет рекомендаций.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script src="{{ url_for('static', filename='js/video-player.js') }}"></script>
+
+<script>
+    // Добавляем обработчик для кнопки скачивания
+    document.addEventListener('DOMContentLoaded', () => {
+        // ... (остальной ваш JavaScript код)
+
+        const downloadBtn = document.querySelector('.download-btn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                const downloadUrl = this.dataset.url;
+                // Создаем временную ссылку и кликаем по ней
+                const tempLink = document.createElement('a');
+                tempLink.href = downloadUrl;
+                tempLink.setAttribute('download', ''); // Атрибут download без значения
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+            });
+        }
+
+      // ...
+    });
+</script>
+{% endblock %}

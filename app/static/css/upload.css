@@ -1,0 +1,89 @@
+.form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    /* background-color: var(--card-background); */
+    border-radius: 8px;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.form-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    margin-left: 15px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    outline: none;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="file"]:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #3367d6;
+}
+
+.progress-container {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #eee;
+    border-radius: 10px; /* Закругленные края */
+    overflow: hidden;   /* Важно для закругления внутреннего прогресса */
+}
+
+.progress-bar-fill {
+    height: 8px; /* Высота полосы прогресса */
+    background-color: var(--primary-color); /* Цвет полосы прогресса */
+    transition: width 0.3s ease; /* Плавная анимация */
+}
+
+.progress-text {
+    text-align: center; /* Текст по центру */
+    margin-top: 0.5rem;
+    color: var(--text-color);
+}

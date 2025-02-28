@@ -1,0 +1,58 @@
+<!-- app/templates/index.html -->
+{% extends 'base.html' %}
+
+{% block title %}LitVideo - Главная{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>
+        {% if query %}
+        Результаты поиска по запросу "{{ query }}"
+        {% else %}
+        Популярные видео
+        {% endif %}
+    </h1>
+
+    <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+            <a class="video-tile-a" href="{{ url_for('video.view_video', video_id=video.id) }}">
+                <div class="thumbnail">
+                    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+                    <div class="play-icon"><i class="fas fa-play"></i></div>
+                </div>
+                <div class="video-info">
+                    <div class="avatar-part">
+                        <img src="{{ User.get_avatar_url(video.user_id) }}" alt="{{ video.author }}"
+                             class="author-avatar">
+                    </div>
+                    <div class="info-part">
+                        <span class="video-title">{{ video.title }}</span>
+                        <span class="video-author">{{ video.author }}</span>
+                        <span class="video-uploaded-time">{{ video.views }} views • {{ video.created_at|humanize_time }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% else %}
+          {% if query %}
+            <p class="no-videos">По запросу "{{ query }}" ничего не найдено.</p>
+          {% else %}
+            <p class="no-videos">Пока нет загруженных видео</p>
+          {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('video.index', page=page-1, query=query) }}" class="pagination-btn"><i class="fas fa-chevron-left"></i>
+            Предыдущая</a>
+        {% endif %}
+
+        {% if videos|length == 12 %}
+        <a href="{{ url_for('video.index', page=page+1, query=query) }}" class="pagination-btn">Следующая <i
+                class="fas fa-chevron-right"></i></a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!-- app/templates/upload.html -->
+{% extends 'base.html' %}
+
+{% block title %}Загрузить видео - LitVideo{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Загрузить видео</h1>
+    <form action="{{ url_for('video.upload_video') }}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Название видео:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание видео:</label>
+            <textarea id="description" name="description" rows="3" placeholder="Введите описание (опционально)"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="video">Выберите файл:</label>
+            <input type="file" id="video" name="video" accept="video/*" required>
+        </div>
+        <button type="submit" class="btn-primary">Загрузить</button>
+    </form>
+</div>
+
+{% endblock %}

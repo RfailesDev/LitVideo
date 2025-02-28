@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 200">
+  <style>
+    /* Анимации для букв */
+    @keyframes letterFromTop {
+      0% {
+        opacity: 0;
+        transform: translateY(-40px) rotateX(60deg) scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0) scale(1);
+      }
+    }
+
+    @keyframes letterFromBottom {
+      0% {
+        opacity: 0;
+        transform: translateY(40px) rotateX(-60deg) scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0) scale(1);
+      }
+    }
+
+    @keyframes letterRotate {
+      0% {
+        opacity: 0;
+        transform: rotate(-40deg) translateX(-15px) scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: rotate(0) translateX(0) scale(1);
+      }
+    }
+    
+    /* Анимация кнопки */
+    @keyframes buttonAppear {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  
+    .letter {
+      opacity: 0;
+      transform-origin: center;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      fill: black;
+    }
+
+    /* Убрали эффект при наведении */
+    
+    #play-button {
+      opacity: 0;
+      animation: buttonAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation-delay: 3.2s;
+      transform-origin: center;
+    }
+
+    /* Буквы с разными задержками */
+    #L { animation: letterFromBottom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
+    #i { animation: letterRotate 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+    #t { animation: letterFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s forwards; }
+
+    #V { animation: letterFromBottom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards; }
+    #i2 { animation: letterRotate 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s forwards; }
+    #d { animation: letterFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 2.1s forwards; }
+    #e { animation: letterFromBottom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 2.4s forwards; }
+    #o { animation: letterFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 2.7s forwards; }
+
+    /* Интерактивность при наведении на кнопку */
+    #play-button:hover {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      transform: scale(1.1);
+    }
+
+    #play-button:hover .play-triangle {
+      fill: #444444;
+      transition: all 0.2s ease;
+    }
+
+  </style>
+
+  <!-- Градиенты -->
+  <defs>    
+    <linearGradient id="buttonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="black" />
+      <stop offset="100%" stop-color="black" />
+    </linearGradient>
+  </defs>
+
+    <!--  фон (прозрачный) -->
+    <rect x="0" y="0" width="500" height="200" fill="transparent"/>
+
+  <!-- Основной контейнер -->
+  <g id="logo-container">
+    <!-- Кнопка воспроизведения -->
+    <g id="play-button">
+      <rect id="play-button-rect" x="175" y="20" width="150" height="90" rx="25" ry="25" fill="url(#buttonGradient)" />
+      <!--  треугольник -->
+      <polygon class="play-triangle" points="265,65 235,45 235,85" fill="#FFFFFF" />
+    </g>
+
+    <!-- Текст логотипа -->
+    <g id="logo-text">
+      <text font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="black" text-anchor="middle" x="250" y="180" letter-spacing="-4.8">
+        <tspan id="L" class="letter">L</tspan>
+        <tspan id="i" class="letter">i</tspan>
+        <tspan id="t" class="letter">t</tspan>
+        <tspan> </tspan>
+        <tspan id="V" class="letter">V</tspan>
+        <tspan id="i2" class="letter">i</tspan>
+        <tspan id="d" class="letter">d</tspan>
+        <tspan id="e" class="letter">e</tspan>
+        <tspan id="o" class="letter">o</tspan>
+      </text>
+    </g>
+  </g>
+</svg>
